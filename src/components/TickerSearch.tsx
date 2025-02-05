@@ -1,18 +1,9 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
@@ -35,6 +26,18 @@ interface TickerSearchProps {
 const TickerSearch: React.FC<TickerSearchProps> = ({ onTickerSelect }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(TICKER_OPTIONS[5].value);
+  const [searchTerm, setSearchTerm] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [open]);
+
+  const filteredOptions = TICKER_OPTIONS.filter((ticker) =>
+    ticker.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -52,18 +55,29 @@ const TickerSearch: React.FC<TickerSearchProps> = ({ onTickerSelect }) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Search stock..." />
-          <CommandList>
-            <CommandEmpty>No stock found.</CommandEmpty>
-            <CommandGroup>
-              {TICKER_OPTIONS.map((ticker) => (
-                <CommandItem
+        <div className="flex flex-col">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search stock..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-3 py-2 text-sm border-b"
+          />
+          <div className="max-h-[300px] overflow-y-auto">
+            {filteredOptions.length === 0 ? (
+              <div className="py-6 text-center text-sm">No stock found.</div>
+            ) : (
+              filteredOptions.map((ticker) => (
+                <button
                   key={ticker.value}
-                  value={ticker.value}
-                  onSelect={(selectedValue) => {
-                    setValue(selectedValue === value ? "" : selectedValue);
-                    onTickerSelect(selectedValue);
+                  className={cn(
+                    "flex w-full items-center py-2 px-3 text-sm hover:bg-accent hover:text-accent-foreground",
+                    value === ticker.value && "bg-accent"
+                  )}
+                  onClick={() => {
+                    setValue(ticker.value === value ? "" : ticker.value);
+                    onTickerSelect(ticker.value);
                     setOpen(false);
                   }}
                 >
@@ -74,11 +88,11 @@ const TickerSearch: React.FC<TickerSearchProps> = ({ onTickerSelect }) => {
                     )}
                   />
                   {ticker.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
       </PopoverContent>
     </Popover>
   );
