@@ -113,7 +113,7 @@ const TickerSearch: React.FC<TickerSearchProps> = ({ onTickerSelect }) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
-        <Command>
+        <Command className="rounded-lg">
           <CommandInput placeholder="Search stock..." />
           <CommandList>
             <CommandEmpty>No stock found.</CommandEmpty>
