@@ -46,7 +46,7 @@ const TickerSearch: React.FC<TickerSearchProps> = ({ onTickerSelect }) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[200px] justify-between text-black"
         >
           {value
             ? TICKER_OPTIONS.find((ticker) => ticker.value === value)?.label

@@ -1,3 +1,4 @@
+"use client";
 import type { StockData } from "@/lib/types"
 
 export const mockStockData: Record<string, StockData> = {
